@@ -1,0 +1,23 @@
+name: PlanetFxBanManagerBC
+version: 2.0.1
+author: Sebastian Mikolai
+
+main: de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Main
+
+commands:
+  ban:
+    usage: /ban
+  tban:
+    usage: /tban
+  gban:
+    usage: /gban
+  gtban:
+    usage: /gtban
+  unban:
+    usage: /unban
+  mute:
+    usage: /mute
+  tmute:
+    usage: /tmute
+  unmute:
+    usage: /unmute
