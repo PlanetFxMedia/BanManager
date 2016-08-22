@@ -49,7 +49,6 @@ public class Main extends Plugin {
 		instance = this;
 		SaveConfig();
 		LoadConfig();
-		MySQL.Connect();
 		MySQL.LadeTabellen();
 		BanManager.bans = MySQL.getBans();
 		UUIDManager.uuiddbs = MySQL.getUUIDs();

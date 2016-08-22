@@ -17,25 +17,38 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class MySQL {
 	
-	public static Connection c = null;
-	public static Statement database;
+	public static Connection con;
 	
-	public static void Connect() {
+	public static Connection Connect() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			c = DriverManager.getConnection("jdbc:mysql://" + Main.getInstance().database_host + ":" + 
+			Connection con = DriverManager.getConnection("jdbc:mysql://" + Main.getInstance().database_host + ":" + 
 					Main.getInstance().database_port + "/" + Main.getInstance().database_db + 
 					"?user=" + Main.getInstance().database_user + "&password=" + Main.getInstance().database_password);
-			database = c.createStatement();
-			Main.getInstance().getLogger().info("Die Verbindung zur Datenbank wurde hergestellt!");
+			return con;
 		} catch (Exception e) {
-			Main.getInstance().getLogger().info("ERROR #01 Connect: Die Verbindung zur Datenbank konnte nicht hergestellt werden!");
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Connection getConnection() {
+		try {
+			if (con == null) {
+				con = Connect();
+			}
+			if (con.isClosed()) {
+				con = Connect();
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return con;
 	}
 	
 	public static void LadeTabellen() {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rss = stmt.executeQuery("SHOW TABLES LIKE 'PlanetFxBanManager'");
 			if (rss.next()) {
@@ -73,6 +86,7 @@ public class MySQL {
 	
 	public static void AddUUID(UUIDDatenbank uuiddb) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManagerUUID (PlayerUUID, PlayerName) VALUES ('" + UUIDUtils.UUIDtoString(uuiddb.getPlayerUUID()) +  "', '" + uuiddb.getPlayerName() + "')");
 			Main.getInstance().getLogger().info("Neuer Spieler " + uuiddb.PlayerName + " - " + uuiddb.PlayerUUID + ", " + bool + ")");
@@ -85,6 +99,7 @@ public class MySQL {
 	public static List<UUIDDatenbank> getUUIDs() {
 		List<UUIDDatenbank> uuiddb = new ArrayList<UUIDDatenbank>();
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rss = stmt.executeQuery("SELECT * FROM PlanetFxBanManagerUUID");
 			while (rss.next()) {
@@ -99,6 +114,7 @@ public class MySQL {
 	
 	public static void AddBan(Ban ban) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManager (PlayerUUID, PlayerName, BanTime, BannedTime, reason, BannedFromPlayerUUID, BannedFromPlayerName, server) VALUES ('" + UUIDUtils.UUIDtoString(ban.getPlayerUUID()) +  "', '" + ban.getPlayerName() + "', '" + ban.getBanTime() + "', '" + ban.getBannedTime() + "', '" + ban.getReason() + "', '" + UUIDUtils.UUIDtoString(ban.getBannedFromPlayerUUID()) + "', '" + ban.getBannedFromPlayerName() + "', '" + ban.getServer() + "')");
 			Main.getInstance().getLogger().info("Spieler " + ban.getPlayerName() + "wurde gebannt! (" + ban.getReason() + ", " + bool + ")");
@@ -153,6 +169,7 @@ public class MySQL {
 	
 	public static void AddReason(Reason reason) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManagerBanReasons (PlayerUUID, PlayerName, reason) VALUES ('" + UUIDUtils.UUIDtoString(reason.getPlayerUUID()) +  "', '" + reason.getPlayerName() + "', '" + reason.getReason() + "')");
 			Main.getInstance().getLogger().info("New Reason (" + reason.getReason() + ", " + bool + ")");	
@@ -164,6 +181,7 @@ public class MySQL {
 	
 	public static void AddMute(Mute mute) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManagerMute (PlayerUUID, PlayerName, MutetBisTime) VALUES ('" + UUIDUtils.UUIDtoString(mute.getPlayerUUID()) +  "', '" + mute.getPlayerName() + "', '" + mute.getMutetBisTime() + "')");
 			Main.getInstance().getLogger().info("New Mute (" + mute.getPlayerName() + ", " + bool + ")");	
@@ -175,6 +193,7 @@ public class MySQL {
 	
 	public static void RemoveMute(Mute mute) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			stmt.execute("DELETE FROM PlanetFxBanManagerMute WHERE PlayerUUID='" + UUIDUtils.UUIDtoString(mute.getPlayerUUID()) + "'");
 		} catch (SQLException e) {
@@ -186,6 +205,7 @@ public class MySQL {
 	public static List<Mute> getMutes() {
 		List<Mute> mutes = new ArrayList<Mute>();
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rss = stmt.executeQuery("SELECT * FROM PlanetFxBanManagerMute");
 			while (rss.next()) {
@@ -201,6 +221,7 @@ public class MySQL {
 	public static List<Reason> getReasons(UUID uuid) {
 		List<Reason> reasons = new ArrayList<Reason>();
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rss = stmt.executeQuery("SELECT * FROM PlanetFxBanManagerBanReasons WHERE PlayerUUID='" + UUIDUtils.UUIDtoString(uuid) + "'");
 			while (rss.next()) {
@@ -215,6 +236,7 @@ public class MySQL {
 	
 	public static void Unban(Ban ban, ProxiedPlayer pp) {
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			stmt.execute("DELETE FROM PlanetFxBanManager WHERE PlayerUUID='" + UUIDUtils.UUIDtoString(ban.getPlayerUUID()) + "'");
 			if (pp != null) {
@@ -236,6 +258,7 @@ public class MySQL {
 	public static List<Ban> getBans() {
 		List<Ban> bans = new ArrayList<Ban>();
 		try {
+			Connection c = getConnection();
 			Statement stmt = c.createStatement();
 			ResultSet rss = stmt.executeQuery("SELECT * FROM PlanetFxBanManager");
 			while (rss.next()) {
