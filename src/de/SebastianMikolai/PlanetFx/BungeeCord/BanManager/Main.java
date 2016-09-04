@@ -74,12 +74,11 @@ public class Main extends Plugin {
 			if (!fconfig.exists()) {
 				fconfig.createNewFile();
 				Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(fconfig);
-				config.set("version", getDescription().getVersion());
-				config.set("database.host", "mysql.centrohost.de");
+				config.set("database.host", "");
 				config.set("database.port", Integer.valueOf(3306));
-				config.set("database.db", "100006");
-				config.set("database.user", "CH1000022");
-				config.set("database.password", "z0LTy3j2Sn");
+				config.set("database.db", "");
+				config.set("database.user", "");
+				config.set("database.password", "");
 				ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, fconfig);
 			}
 			File fmessages = new File(getDataFolder().getPath(), "messages.yml");

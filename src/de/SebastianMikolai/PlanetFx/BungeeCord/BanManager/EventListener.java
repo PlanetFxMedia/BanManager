@@ -25,7 +25,7 @@ public class EventListener implements Listener {
 		UUIDDatenbank uuiddb = null;
 		if (UUIDManager.isNewPlayer(uuid)) {
 			uuiddb = new UUIDDatenbank(uuid, e.getConnection().getName());
-			UUIDManager.AddUUID(uuiddb);
+			UUIDManager.AddUUID(uuiddb, e);
 		} else {
 			uuiddb = UUIDManager.getUUIDDatenbank(e.getConnection().getName());
 			if (uuiddb != null) {

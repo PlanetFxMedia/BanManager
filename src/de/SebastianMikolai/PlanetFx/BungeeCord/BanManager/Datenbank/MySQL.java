@@ -8,12 +8,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Utils.ChatUtils;
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Utils.DateUtils;
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Utils.UUIDUtils;
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Main;
+
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.LoginEvent;
 
 public class MySQL {
 	
@@ -34,7 +38,7 @@ public class MySQL {
 		try {
 			if (con == null) {
 				con = Connect();
-			} else if (con.isClosed()) {
+			} else if (con.isClosed() || con.isReadOnly() || con.isValid(500)) {
 				con = Connect();
 			}
 		} catch (SQLException e) {
@@ -81,13 +85,24 @@ public class MySQL {
 		}
 	}
 	
-	public static void AddUUID(UUIDDatenbank uuiddb) {
+	public static void AddUUID(UUIDDatenbank uuiddb, LoginEvent event) {
 		try {
 			Connection c = getConnection();
 			Statement stmt = c.createStatement();
-			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManagerUUID (PlayerUUID, PlayerName) VALUES ('" + UUIDUtils.UUIDtoString(uuiddb.getPlayerUUID()) +  "', '" + uuiddb.getPlayerName() + "')");
+			String uuid = UUIDUtils.UUIDtoString(uuiddb.getPlayerUUID());
+			String name = uuiddb.getPlayerName();
+			BungeeCord.getInstance().getLogger().log(Level.WARNING, name);
+			BungeeCord.getInstance().getLogger().log(Level.WARNING, uuiddb.getPlayerUUID().toString());
+			BungeeCord.getInstance().getLogger().log(Level.WARNING, String.valueOf(uuiddb.getPlayerUUID().version()));
+			if (stmt.isClosed()) {
+				c = Connect();
+				stmt = c.createStatement();
+			}
+			boolean bool = stmt.execute("INSERT INTO PlanetFxBanManagerUUID (PlayerUUID, PlayerName) VALUES ('" + uuid +  "', '" + name + "')");
 			Main.getInstance().getLogger().info("Neuer Spieler " + uuiddb.PlayerName + " - " + uuiddb.PlayerUUID + ", " + bool + ")");
 		} catch (SQLException e) {
+			event.setCancelReason("&cBeim anmelden ist ein Fehler entstanden");
+			event.setCancelled(true);
 			Main.getInstance().getLogger().info("ERROR #03 AddUUID: Der Datensatz konnte nicht eingetragen werden!");
 			e.printStackTrace();
 		}

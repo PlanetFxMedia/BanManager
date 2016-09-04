@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.md_5.bungee.api.event.LoginEvent;
+
 public class UUIDManager {
 	
 	public static List<UUIDDatenbank> uuiddbs = new ArrayList<UUIDDatenbank>();
@@ -28,8 +30,8 @@ public class UUIDManager {
 		return ReturnUUIDDatenbank;
 	}
 	
-	public static void AddUUID(UUIDDatenbank uuiddb) {
+	public static void AddUUID(UUIDDatenbank uuiddb, LoginEvent e) {
 		uuiddbs.add(uuiddb);
-		MySQL.AddUUID(uuiddb);
+		MySQL.AddUUID(uuiddb, e);
 	}
 }
