@@ -9,6 +9,7 @@ import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Datenbank.UUIDDatenban
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Datenbank.UUIDManager;
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Utils.ChatUtils;
 import de.SebastianMikolai.PlanetFx.BungeeCord.BanManager.Utils.DateUtils;
+
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -86,7 +87,7 @@ public class EventListener implements Listener {
 	@EventHandler
     public void onChatEvent(ChatEvent e){
 		if (e.getSender() instanceof ProxiedPlayer) {
-			ProxiedPlayer pp = (ProxiedPlayer) e.getSender();
+			ProxiedPlayer pp = (ProxiedPlayer) e.getSender();			
 			UUIDDatenbank uuiddb = null;
 			uuiddb = UUIDManager.getUUIDDatenbank(pp.getName());
 			if (uuiddb != null) {
